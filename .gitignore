@@ -1,0 +1,27 @@
+# Maven target directory
+/target/
+
+# IntelliJ IDEA
+/.idea/
+*.iml
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test output
+/reports/
+
+# Test data (if generated)
+main/resources/testdata/TestData.xlsx 

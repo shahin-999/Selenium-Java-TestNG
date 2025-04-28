@@ -1,0 +1,73 @@
+package com.framework.base;
+
+import com.framework.utils.ExtentReportManager;
+import com.framework.utils.ScreenshotUtil;
+import com.framework.utils.ExcelWriter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.WebDriver;
+import org.testng.ITestResult;
+import org.testng.annotations.*;
+
+public class BaseTest {
+    protected WebDriver driver;
+    protected Logger logger;
+    private long startTime;
+
+    @Parameters({"browser"})
+    @BeforeMethod(alwaysRun = true)
+    public void setUp(@Optional String browser) {
+        logger = LogManager.getLogger(this.getClass());
+        BrowserFactory.initDriver(browser);
+        driver = BrowserFactory.getDriver();
+        ExtentReportManager.startTest(this.getClass().getSimpleName());
+        startTime = System.currentTimeMillis();
+        
+        // Add test metadata
+        ExtentReportManager.addTestCategory("Web UI Tests");
+        ExtentReportManager.addTestAuthor("Automation Team");
+        ExtentReportManager.addTestStep("Test Setup", "Initializing browser: " + browser);
+    }
+
+    @BeforeSuite
+    public void setupSuite() {
+        ScreenshotUtil.clearScreenshots();
+        ExcelWriter.createTestDataFile("main/resources/testdata/TestData.xlsx");
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void tearDown(ITestResult result) {
+        String testName = result.getName();
+        long executionTime = System.currentTimeMillis() - startTime;
+        
+        if (result.getStatus() == ITestResult.FAILURE) {
+            String screenshotPath = ScreenshotUtil.captureScreenshot(driver, testName);
+            logger.error("Test failed: " + testName);
+            ExtentReportManager.getTest().fail("❌ Test Failed. 😔 Check the screenshot for details. Screenshot: " + screenshotPath);
+            ExtentReportManager.attachScreenshot(screenshotPath, "Test Failed: " + testName);
+            ExtentReportManager.updateTestStats("Failed");
+            
+            if (result.getThrowable() != null) {
+                ExtentReportManager.addTestStep("Failure Details", result.getThrowable().getMessage());
+            }
+        } else if (result.getStatus() == ITestResult.SUCCESS) {
+            logger.info("Test passed: " + testName);
+            ExtentReportManager.getTest().pass("✅ Test Passed Successfully! 🎉");
+            ExtentReportManager.updateTestStats("Passed");
+        } else if (result.getStatus() == ITestResult.SKIP) {
+            logger.warn("Test skipped: " + testName);
+            ExtentReportManager.getTest().skip("⚠️ Test Skipped");
+            ExtentReportManager.updateTestStats("Skipped");
+        }
+        
+        ExtentReportManager.addTestStep("Test Cleanup", "Closing browser and cleaning up resources");
+        ExtentReportManager.addTestStep("Execution Time", executionTime + " ms");
+        BrowserFactory.quitDriver();
+        ExtentReportManager.endTest();
+    }
+
+    @AfterSuite(alwaysRun = true)
+    public void flushReport() {
+        ExtentReportManager.flushReports();
+    }
+} 
