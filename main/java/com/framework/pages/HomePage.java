@@ -13,9 +13,6 @@ public class HomePage {
         this.driver = driver;
     }
 
-    public void navigateToHomePage(){
-        driver.navigate().to(ConfigReader.getEnvUrl());
-    }
 
     public String getWelcomeMessage() {
         return driver.findElement(welcomeMessage).getText();
