@@ -7,10 +7,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class HomePageTests extends BaseTest {
-    @Test (description = "New Test File")
+    @Test (description = "Test will be failed")
     public void testWelcomeMessage() {
-        HomePage homePage = new HomePage(driver);
-        homePage.navigateToHomePage();
         String welcomeMsg = "wer";
         ExtentReportManager.getTest().info("Welcome message: " + welcomeMsg);
         logger.info("Welcome message: " + welcomeMsg);
@@ -18,24 +16,21 @@ public class HomePageTests extends BaseTest {
     }
 
 
-    @Test (description = "New Test File")
+    @Test (description = "Test will be passed")
     public void testWelcomeMessage1() {
-        HomePage homePage = new HomePage(driver);
-        homePage.navigateToHomePage();
         String welcomeMsg = "Welcome";
         ExtentReportManager.getTest().info("Welcome message: " + welcomeMsg);
         logger.info("Welcome message: " + welcomeMsg);
         Assert.assertTrue(welcomeMsg.contains("Welcome"), "Welcome message not found!");
     }
 
-    @Test (description = "New Test File")
-    public void testWelcomeMessage2() {
+    @Test (description = "Swag Labs Test")
+    public void swagLabsHomePageTest() {
         HomePage homePage = new HomePage(driver);
-        homePage.navigateToHomePage();
-        String welcomeMsg = "wer";
-        ExtentReportManager.getTest().info("Welcome message: " + welcomeMsg);
-        logger.info("Welcome message: " + welcomeMsg);
-        Assert.assertTrue(welcomeMsg.contains("Welcome"), "Welcome message not found!");
+        String pageTitle = homePage.getPageTitle();
+        ExtentReportManager.getTest().info("Page title: " + pageTitle);
+        logger.info("Page tile: " + pageTitle);
+        Assert.assertTrue(pageTitle.contains("Swag Labs"), "Page title not found");
     }
 
 } 
