@@ -16,8 +16,4 @@ public class HomePage {
     public String getWelcomeMessage() {
         return driver.findElement(welcomeMessage).getText();
     }
-
-    public String getPageTitle() {
-        return driver.getTitle();
-    }
 } 

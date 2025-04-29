@@ -1,6 +1,7 @@
 package com.tests;
 
 import com.framework.base.BaseTest;
+import com.framework.pages.CommonPage;
 import com.framework.pages.HomePage;
 import com.framework.utils.ExtentReportManager;
 import org.testng.Assert;
@@ -26,8 +27,8 @@ public class HomePageTests extends BaseTest {
 
     @Test (description = "Swag Labs Test")
     public void swagLabsHomePageTest() {
-        HomePage homePage = new HomePage(driver);
-        String pageTitle = homePage.getPageTitle();
+        CommonPage common = new CommonPage(driver);
+        String pageTitle = common.getPageTitle();
         ExtentReportManager.getTest().info("Page title: " + pageTitle);
         logger.info("Page tile: " + pageTitle);
         Assert.assertTrue(pageTitle.contains("Swag Labs"), "Page title not found");
