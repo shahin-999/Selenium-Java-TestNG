@@ -17,7 +17,7 @@ public class ExtentReportManager {
     private static ThreadLocal<ExtentTest> test = new ThreadLocal<>();
     private static Map<String, Integer> testStats = new HashMap<>();
 
-    public static void startTest(String testName) {
+    public static void startTest(String testName, String testDescription, String testMethodName, String browser) {
         if (extent == null) {
             ExtentSparkReporter sparkReporter = new ExtentSparkReporter("reports/extent-reports/ExtentReport.html");
             sparkReporter.config().setTheme(Theme.STANDARD);
@@ -54,7 +54,18 @@ public class ExtentReportManager {
             String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             extent.setSystemInfo("Report Generated On", currentTime);
         }
-        test.set(extent.createTest(testName));
+
+        // Format test name as "TestClassName: TestMethod/TestDescription (BrowserName)"
+        String testInfo = testDescription != null && !testDescription.isEmpty() 
+            ? testDescription 
+            : testMethodName;
+            
+        String formattedTestName = String.format("%s: %s (%s)", 
+            testName, 
+            testInfo,
+            browser != null ? browser : ConfigReader.getBrowser());
+
+        test.set(extent.createTest(formattedTestName));
         testStats.put("Total", testStats.get("Total") + 1);
     }
 

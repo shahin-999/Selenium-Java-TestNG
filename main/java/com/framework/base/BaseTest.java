@@ -17,11 +17,20 @@ public class BaseTest {
 
     @Parameters({"browser"})
     @BeforeMethod(alwaysRun = true)
-    public void setUp(@Optional String browser) {
+    public void setUp(@Optional String browser, ITestResult result) {
         logger = LogManager.getLogger(this.getClass());
         BrowserFactory.initDriver(browser);
         driver = BrowserFactory.getDriver();
-        ExtentReportManager.startTest(this.getClass().getSimpleName());
+        
+        // Get test description and method name from @Test annotation
+        String testDescription = "";
+        String testMethodName = "";
+        if (result != null && result.getMethod() != null) {
+            testDescription = result.getMethod().getDescription();
+            testMethodName = result.getMethod().getMethodName();
+        }
+        
+        ExtentReportManager.startTest(this.getClass().getSimpleName(), testDescription, testMethodName, browser);
         startTime = System.currentTimeMillis();
         
         // Add test metadata
@@ -44,7 +53,6 @@ public class BaseTest {
             ExtentReportManager.getTest().fail("Unable to navigate to the URL: "+ baseURL);
             throw new RuntimeException(e);
         }
-
     }
 
     @BeforeSuite
