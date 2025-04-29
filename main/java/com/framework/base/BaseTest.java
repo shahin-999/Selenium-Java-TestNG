@@ -3,7 +3,6 @@ package com.framework.base;
 import com.framework.config.ConfigReader;
 import com.framework.utils.ExtentReportManager;
 import com.framework.utils.ScreenshotUtil;
-import com.framework.utils.ExcelWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
@@ -58,7 +57,6 @@ public class BaseTest {
     @BeforeSuite
     public void setupSuite() {
         ScreenshotUtil.clearScreenshots();
-        ExcelWriter.createTestDataFile("main/resources/testdata/TestData.xlsx");
     }
 
     @AfterMethod(alwaysRun = true)
