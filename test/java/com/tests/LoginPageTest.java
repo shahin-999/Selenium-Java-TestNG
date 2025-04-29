@@ -17,7 +17,8 @@ public class LoginPageTest extends BaseTest {
     CommonPage common;
     LoginPage loginPage;
 
-    @Test (description = "Customer login to the site successfully.")
+    @Test (description = "Customer login to the site successfully.",
+           groups = {"smoke", "login", "regression"})
     public void TestSuccessfulLogin(){
         common = new CommonPage(driver);
         loginPage = new LoginPage(driver);
