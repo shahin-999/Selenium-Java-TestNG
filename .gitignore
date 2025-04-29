@@ -22,6 +22,3 @@ Thumbs.db
 
 # Test output
 /reports/
-
-# Test data (if generated)
-main/resources/testdata/TestData.xlsx 

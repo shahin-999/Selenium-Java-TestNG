@@ -6,7 +6,6 @@ import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 import com.framework.config.ConfigReader;
-import java.io.File;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +17,7 @@ public class ExtentReportManager {
     private static ThreadLocal<ExtentTest> test = new ThreadLocal<>();
     private static Map<String, Integer> testStats = new HashMap<>();
 
-    public static void startTest(String testName) {
+    public static void startTest(String testName, String testDescription, String testMethodName, String browser) {
         if (extent == null) {
             ExtentSparkReporter sparkReporter = new ExtentSparkReporter("reports/extent-reports/ExtentReport.html");
             sparkReporter.config().setTheme(Theme.STANDARD);
@@ -46,15 +45,27 @@ public class ExtentReportManager {
             }
             
             // Add test environment information
-            extent.setSystemInfo("Environment", ConfigReader.getProperty("env"));
-            extent.setSystemInfo("Base URL", ConfigReader.getProperty("baseUrl"));
-            extent.setSystemInfo("Browser", ConfigReader.getProperty("browser"));
+            String environment = ConfigReader.getProperty("env");
+            extent.setSystemInfo("Environment", environment);
+            extent.setSystemInfo("Base URL", ConfigReader.getProperty(environment+".baseUrl"));
+            extent.setSystemInfo("Browser", ConfigReader.getBrowser());
             
             // Add report generation time
             String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             extent.setSystemInfo("Report Generated On", currentTime);
         }
-        test.set(extent.createTest(testName));
+
+        // Format test name as "TestClassName: TestMethod/TestDescription (BrowserName)"
+        String testInfo = testDescription != null && !testDescription.isEmpty() 
+            ? testDescription 
+            : testMethodName;
+            
+        String formattedTestName = String.format("%s: %s (%s)", 
+            testName, 
+            testInfo,
+            browser != null ? browser : ConfigReader.getBrowser());
+
+        test.set(extent.createTest(formattedTestName));
         testStats.put("Total", testStats.get("Total") + 1);
     }
 

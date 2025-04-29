@@ -1,38 +1,69 @@
 package com.framework.base;
 
+import com.framework.config.ConfigReader;
 import com.framework.utils.ExtentReportManager;
 import com.framework.utils.ScreenshotUtil;
-import com.framework.utils.ExcelWriter;
+import com.framework.utils.TestTagManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
+import java.lang.reflect.Method;
 
 public class BaseTest {
     protected WebDriver driver;
+    protected static final ThreadLocal<WebDriver> threadLocalDriver = new ThreadLocal<>();
     protected Logger logger;
     private long startTime;
 
     @Parameters({"browser"})
     @BeforeMethod(alwaysRun = true)
-    public void setUp(@Optional String browser) {
+    public void setUp(@Optional String browser, ITestResult result, Method method) {
         logger = LogManager.getLogger(this.getClass());
         BrowserFactory.initDriver(browser);
         driver = BrowserFactory.getDriver();
-        ExtentReportManager.startTest(this.getClass().getSimpleName());
+        threadLocalDriver.set(driver);
+        
+        // Get test description and method name from @Test annotation
+        String testDescription = "";
+        String testMethodName = "";
+        if (result != null && result.getMethod() != null) {
+            testDescription = result.getMethod().getDescription();
+            testMethodName = result.getMethod().getMethodName();
+        }
+        
+        ExtentReportManager.startTest(this.getClass().getSimpleName(), testDescription, testMethodName, browser);
         startTime = System.currentTimeMillis();
         
         // Add test metadata
         ExtentReportManager.addTestCategory("Web UI Tests");
         ExtentReportManager.addTestAuthor("Automation Team");
         ExtentReportManager.addTestStep("Test Setup", "Initializing browser: " + browser);
+
+        // Automatically assign tags based on TestNG groups
+        TestTagManager.assignTags(method);
+
+        // Navigate to the Base URL
+        String baseURL = ConfigReader.getBaseUrl();
+        try {
+            if (baseURL != null && !baseURL.isBlank()){
+                driver.navigate().to(baseURL);
+            }else {
+                logger.error("Base url is null, empty, or blank");
+                ExtentReportManager.getTest().fail("Base url is null, empty, or blank");
+            }
+
+        } catch (Exception e) {
+            logger.error("Unable to navigate to the URL: "+ baseURL);
+            ExtentReportManager.getTest().fail("Unable to navigate to the URL: "+ baseURL);
+            throw new RuntimeException(e);
+        }
     }
 
     @BeforeSuite
     public void setupSuite() {
         ScreenshotUtil.clearScreenshots();
-        ExcelWriter.createTestDataFile("main/resources/testdata/TestData.xlsx");
     }
 
     @AfterMethod(alwaysRun = true)
@@ -64,10 +95,19 @@ public class BaseTest {
         ExtentReportManager.addTestStep("Execution Time", executionTime + " ms");
         BrowserFactory.quitDriver();
         ExtentReportManager.endTest();
+        
+        if (driver != null) {
+            driver.quit();
+            threadLocalDriver.remove();
+        }
     }
 
     @AfterSuite(alwaysRun = true)
     public void flushReport() {
         ExtentReportManager.flushReports();
+    }
+
+    protected WebDriver getDriver() {
+        return threadLocalDriver.get();
     }
 } 

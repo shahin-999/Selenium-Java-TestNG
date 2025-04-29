@@ -1,16 +1,15 @@
 package com.tests;
 
 import com.framework.base.BaseTest;
+import com.framework.pages.CommonPage;
 import com.framework.pages.HomePage;
 import com.framework.utils.ExtentReportManager;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class HomePageTests extends BaseTest {
-    @Test (description = "New Test File")
+    @Test (description = "Test will be failed")
     public void testWelcomeMessage() {
-        HomePage homePage = new HomePage(driver);
-        homePage.navigateToHomePage();
         String welcomeMsg = "wer";
         ExtentReportManager.getTest().info("Welcome message: " + welcomeMsg);
         logger.info("Welcome message: " + welcomeMsg);
@@ -18,24 +17,21 @@ public class HomePageTests extends BaseTest {
     }
 
 
-    @Test (description = "New Test File")
-    public void testWelcomeMessage1() {
-        HomePage homePage = new HomePage(driver);
-        homePage.navigateToHomePage();
+    @Test
+    public void passtest() {
         String welcomeMsg = "Welcome";
         ExtentReportManager.getTest().info("Welcome message: " + welcomeMsg);
         logger.info("Welcome message: " + welcomeMsg);
         Assert.assertTrue(welcomeMsg.contains("Welcome"), "Welcome message not found!");
     }
 
-    @Test (description = "New Test File")
-    public void testWelcomeMessage2() {
-        HomePage homePage = new HomePage(driver);
-        homePage.navigateToHomePage();
-        String welcomeMsg = "wer";
-        ExtentReportManager.getTest().info("Welcome message: " + welcomeMsg);
-        logger.info("Welcome message: " + welcomeMsg);
-        Assert.assertTrue(welcomeMsg.contains("Welcome"), "Welcome message not found!");
+    @Test (description = "Swag Labs Test")
+    public void swagLabsHomePageTest() {
+        CommonPage common = new CommonPage(driver);
+        String pageTitle = common.getPageTitle();
+        ExtentReportManager.getTest().info("Page title: " + pageTitle);
+        logger.info("Page tile: " + pageTitle);
+        Assert.assertTrue(pageTitle.contains("Swag Labs"), "Page title not found");
     }
 
 } 
