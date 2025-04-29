@@ -45,9 +45,10 @@ public class ExtentReportManager {
             }
             
             // Add test environment information
-            extent.setSystemInfo("Environment", ConfigReader.getProperty("env"));
-            extent.setSystemInfo("Base URL", ConfigReader.getProperty("baseUrl"));
-            extent.setSystemInfo("Browser", ConfigReader.getProperty("browser"));
+            String environment = ConfigReader.getProperty("env");
+            extent.setSystemInfo("Environment", environment);
+            extent.setSystemInfo("Base URL", ConfigReader.getProperty(environment+".baseUrl"));
+            extent.setSystemInfo("Browser", ConfigReader.getBrowser());
             
             // Add report generation time
             String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
