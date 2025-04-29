@@ -16,13 +16,14 @@ public class ConfigReader {
         }
     }
 
+    static String env = getProperty("env");
+
     public static String getProperty(String key) {
         return properties.getProperty(key);
     }
 
-    public static String getEnvUrl() {
-        String env = getProperty("env");
-        return getProperty(env + ".url");
+    public static String getBaseUrl() {
+        return getProperty(env + ".baseUrl");
     }
 
     public static String getBrowser() {
