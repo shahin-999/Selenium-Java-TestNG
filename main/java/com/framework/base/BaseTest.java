@@ -3,23 +3,27 @@ package com.framework.base;
 import com.framework.config.ConfigReader;
 import com.framework.utils.ExtentReportManager;
 import com.framework.utils.ScreenshotUtil;
+import com.framework.utils.TestTagManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
+import java.lang.reflect.Method;
 
 public class BaseTest {
     protected WebDriver driver;
+    protected static final ThreadLocal<WebDriver> threadLocalDriver = new ThreadLocal<>();
     protected Logger logger;
     private long startTime;
 
     @Parameters({"browser"})
     @BeforeMethod(alwaysRun = true)
-    public void setUp(@Optional String browser, ITestResult result) {
+    public void setUp(@Optional String browser, ITestResult result, Method method) {
         logger = LogManager.getLogger(this.getClass());
         BrowserFactory.initDriver(browser);
         driver = BrowserFactory.getDriver();
+        threadLocalDriver.set(driver);
         
         // Get test description and method name from @Test annotation
         String testDescription = "";
@@ -36,6 +40,9 @@ public class BaseTest {
         ExtentReportManager.addTestCategory("Web UI Tests");
         ExtentReportManager.addTestAuthor("Automation Team");
         ExtentReportManager.addTestStep("Test Setup", "Initializing browser: " + browser);
+
+        // Automatically assign tags based on TestNG groups
+        TestTagManager.assignTags(method);
 
         // Navigate to the Base URL
         String baseURL = ConfigReader.getBaseUrl();
@@ -88,10 +95,19 @@ public class BaseTest {
         ExtentReportManager.addTestStep("Execution Time", executionTime + " ms");
         BrowserFactory.quitDriver();
         ExtentReportManager.endTest();
+        
+        if (driver != null) {
+            driver.quit();
+            threadLocalDriver.remove();
+        }
     }
 
     @AfterSuite(alwaysRun = true)
     public void flushReport() {
         ExtentReportManager.flushReports();
+    }
+
+    protected WebDriver getDriver() {
+        return threadLocalDriver.get();
     }
 } 
