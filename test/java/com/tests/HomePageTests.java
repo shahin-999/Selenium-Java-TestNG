@@ -16,8 +16,8 @@ public class HomePageTests extends BaseTest {
     }
 
 
-    @Test (description = "Test will be passed")
-    public void testWelcomeMessage1() {
+    @Test
+    public void passtest() {
         String welcomeMsg = "Welcome";
         ExtentReportManager.getTest().info("Welcome message: " + welcomeMsg);
         logger.info("Welcome message: " + welcomeMsg);

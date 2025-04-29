@@ -1,6 +1,5 @@
 package com.framework.pages;
 
-import com.framework.config.ConfigReader;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
