@@ -1,5 +1,6 @@
 package com.framework.base;
 
+import com.framework.config.ConfigReader;
 import com.framework.utils.ExtentReportManager;
 import com.framework.utils.ScreenshotUtil;
 import com.framework.utils.ExcelWriter;
@@ -27,6 +28,23 @@ public class BaseTest {
         ExtentReportManager.addTestCategory("Web UI Tests");
         ExtentReportManager.addTestAuthor("Automation Team");
         ExtentReportManager.addTestStep("Test Setup", "Initializing browser: " + browser);
+
+        // Navigate to the Base URL
+        String baseURL = ConfigReader.getBaseUrl();
+        try {
+            if (baseURL != null && !baseURL.isBlank()){
+                driver.navigate().to(baseURL);
+            }else {
+                logger.error("Base url is null, empty, or blank");
+                ExtentReportManager.getTest().fail("Base url is null, empty, or blank");
+            }
+
+        } catch (Exception e) {
+            logger.error("Unable to navigate to the URL: "+ baseURL);
+            ExtentReportManager.getTest().fail("Unable to navigate to the URL: "+ baseURL);
+            throw new RuntimeException(e);
+        }
+
     }
 
     @BeforeSuite
