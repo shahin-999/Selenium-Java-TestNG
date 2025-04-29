@@ -13,6 +13,7 @@ public class TestTagManager {
     static {
         // Define your tag mappings here
         TAG_MAPPINGS.put("smoke", new String[]{"Smoke Tests"});
+        TAG_MAPPINGS.put("home", new String[]{"Home Page Tests"});
         TAG_MAPPINGS.put("login", new String[]{"Login Tests"});
         TAG_MAPPINGS.put("regression", new String[]{"Regression Tests"});
         TAG_MAPPINGS.put("api", new String[]{"API Tests"});
